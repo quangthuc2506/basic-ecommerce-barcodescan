@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "992118625262",
+    "project_id": "commerce-qrcode",
+    "storage_bucket": "commerce-qrcode.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:992118625262:android:2c354697d91d61f6a1f4ff",
+        "android_client_info": {
+          "package_name": "com.example.ecommerce_qrcode"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "992118625262-cq8n6hjt2sr3g0ppv90p4v3tugllouq4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDdOOlCdlDELUfmNFrMVZYE831HWQjmpzA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "992118625262-cq8n6hjt2sr3g0ppv90p4v3tugllouq4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
