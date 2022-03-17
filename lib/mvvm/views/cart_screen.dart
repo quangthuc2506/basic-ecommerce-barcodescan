@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 
 class CartScreen extends StatelessWidget {
   CartScreen({Key? key}) : super(key: key);
-  CartViewModel cartViewModelTotal = Get.find(tag: 'cartViewModel');
+  CartViewModel cartViewModel = Get.find(tag: 'cartViewModel');
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,17 +34,17 @@ class CartScreen extends StatelessWidget {
                       () => Checkbox(
                           materialTapTargetSize:
                               MaterialTapTargetSize.shrinkWrap,
-                          value: cartViewModelTotal.checkAll.value,
+                          value: cartViewModel.checkAll.value,
                           activeColor: Colors.green,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(5)),
                           onChanged: (value) {
-                            cartViewModelTotal.onCheckAll();
+                            cartViewModel.onCheckAll();
                           }),
                     ),
                     Obx(
                       () => Text(
-                        "All (${cartViewModelTotal.total} products)",
+                        "All (${cartViewModel.total} products)",
                         style: const TextStyle(fontWeight: FontWeight.w500),
                       ),
                     )
@@ -67,24 +67,27 @@ class CartScreen extends StatelessWidget {
                 padding: const EdgeInsets.only(bottom: 270),
                 child: SingleChildScrollView(
                   child: Obx(
-                    () => ListView.builder(
-                        physics: const ScrollPhysics(),
-                        shrinkWrap: true,
-                        itemCount: cartViewModelTotal.carts.length,
-                        itemBuilder: (context, index) {
-                          // lay product o vi tri index
-                          Product product = cartViewModelTotal
-                              .getProductById(cartViewModelTotal.carts[index].idSanPham);
-
-                          return CardInCart(product: product,
-                              checkProduct: cartViewModelTotal.carts[index].check,
-                              quantity: cartViewModelTotal.carts[index].soLuongLocal,
-                              
-                          onPressedDelete: (){
-                            cartViewModelTotal.onDeleteCartById(cartViewModelTotal.carts[index].idDonHang);
-                          },
-                          );
-                        }),
+                    () => cartViewModel.carts.isEmpty
+                        ? const Center(child: CircularProgressIndicator())
+                        : ListView.builder(
+                            physics: const ScrollPhysics(),
+                            shrinkWrap: true,
+                            itemCount: cartViewModel.carts.length,
+                            itemBuilder: (context, index) {
+                              // lay product o vi tri index
+                              Product product = cartViewModel.getProductById(
+                                  cartViewModel.carts[index].idSanPham);
+                              return CardInCart(
+                                product: product,
+                                checkProduct: cartViewModel.carts[index].check,
+                                quantity:
+                                    cartViewModel.carts[index].soLuongLocal,
+                                onPressedDelete: () {
+                                  cartViewModel.onDeleteCartById(
+                                      cartViewModel.carts[index].idDonHang);
+                                },
+                              );
+                            }),
                   ),
                 ),
               ),
@@ -107,7 +110,6 @@ class CartScreen extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 10),
                   child: TextFormField(
                     decoration: InputDecoration(
-                      
                       isDense: true,
                       contentPadding: const EdgeInsets.all(10),
                       hintText: "Enter Your Coupon",
@@ -154,7 +156,7 @@ class CartScreen extends StatelessWidget {
                               children: [
                                 Obx(
                                   () => Text(
-                                    "Item(${cartViewModelTotal.carts.length})",
+                                    "Item(${cartViewModel.carts.length})",
                                     style: const TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w400,
@@ -163,7 +165,7 @@ class CartScreen extends StatelessWidget {
                                 ),
                                 Obx(
                                   () => Text(
-                                      "\$${cartViewModelTotal.totalMoney.toStringAsFixed(2)}",
+                                      "\$${cartViewModel.totalMoney.toStringAsFixed(2)}",
                                       style: const TextStyle(
                                           fontSize: 14,
                                           fontWeight: FontWeight.w400,
@@ -177,7 +179,7 @@ class CartScreen extends StatelessWidget {
                                 bottom: 10, left: 10, right: 10),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children:  [
+                              children: [
                                 const Text(
                                   "Shipping",
                                   style: TextStyle(
@@ -186,8 +188,8 @@ class CartScreen extends StatelessWidget {
                                       color: Color(0xff9098B1)),
                                 ),
                                 Obx(
-                                  ()=> Text("\$${cartViewModelTotal.shipFee}",
-                                      style:const TextStyle(
+                                  () => Text("\$${cartViewModel.shipFee}",
+                                      style: const TextStyle(
                                           fontSize: 14,
                                           fontWeight: FontWeight.w400,
                                           color: Colors.black)),
@@ -203,7 +205,7 @@ class CartScreen extends StatelessWidget {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                 const Text(
+                                const Text(
                                   "Total Price",
                                   style: TextStyle(
                                       fontSize: 14,
@@ -211,8 +213,9 @@ class CartScreen extends StatelessWidget {
                                       color: Colors.black),
                                 ),
                                 Obx(
-                                  ()=> Text("\$${cartViewModelTotal.totalPrice.toStringAsFixed(2)}",
-                                      style:const TextStyle(
+                                  () => Text(
+                                      "\$${cartViewModel.totalPrice.toStringAsFixed(2)}",
+                                      style: const TextStyle(
                                           fontSize: 14,
                                           fontWeight: FontWeight.w900,
                                           color: Colors.green)),
@@ -227,7 +230,8 @@ class CartScreen extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 10),
                   child: ElevatedButton(
                     onPressed: () {},
-                    child: Obx(()=> Text("Pay \$${cartViewModelTotal.totalPrice.toStringAsFixed(2)}")),
+                    child: Obx(() => Text(
+                        "Pay \$${cartViewModel.totalPrice.toStringAsFixed(2)}")),
                     style: ElevatedButton.styleFrom(
                         primary: Colors.green,
                         shape: RoundedRectangleBorder(
@@ -246,19 +250,25 @@ class CartScreen extends StatelessWidget {
 
 class CardInCart extends StatelessWidget {
   CartViewModel cartViewModelQuantity = Get.find(tag: 'cartViewModel');
-  Product? product;   
+  Product? product;
   RxBool? checkProduct;
   RxBool? checkFavorite = false.obs;
   RxInt? quantity;
   Function()? onPressedDelete;
-  CardInCart({Key? key, this.product,this.onPressedDelete,this.checkProduct,this.quantity}) : super(key: key);
+  CardInCart(
+      {Key? key,
+      this.product,
+      this.onPressedDelete,
+      this.checkProduct,
+      this.quantity})
+      : super(key: key);
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: (){
-        cartViewModelQuantity.onCheckProduct(checkProduct!,product!,quantity!);
+      onTap: () {
+        cartViewModelQuantity.onCheckProduct(
+            checkProduct!, product!, quantity!);
       },
-      
       child: Card(
         margin: const EdgeInsets.only(left: 20, right: 20, top: 20),
         elevation: 0,
@@ -277,7 +287,8 @@ class CardInCart extends StatelessWidget {
                         borderRadius: BorderRadius.circular(5)),
                     value: checkProduct!.value,
                     onChanged: (value) {
-                      cartViewModelQuantity.onCheckProduct(checkProduct!,product!,quantity!);
+                      cartViewModelQuantity.onCheckProduct(
+                          checkProduct!, product!, quantity!);
                     }),
               ),
               Container(
@@ -311,7 +322,8 @@ class CardInCart extends StatelessWidget {
                             Obx(
                               () => IconButton(
                                   onPressed: () {
-                                    cartViewModelQuantity.onCheckFavorite(checkFavorite!);
+                                    cartViewModelQuantity
+                                        .onCheckFavorite(checkFavorite!);
                                   },
                                   icon: checkFavorite!.value
                                       ? const Icon(
@@ -369,7 +381,8 @@ class CardInCart extends StatelessWidget {
                                     color: Colors.black,
                                   ),
                                   onPressed: () {
-                                      cartViewModelQuantity.decreaseQuantity(quantity!,product!);
+                                    cartViewModelQuantity.decreaseQuantity(
+                                        quantity!, product!);
                                   },
                                 ),
                                 suffixIcon: IconButton(
@@ -379,7 +392,8 @@ class CardInCart extends StatelessWidget {
                                       color: Colors.black,
                                     ),
                                     onPressed: () {
-                                      cartViewModelQuantity.increaseQuantity(quantity!,product!);
+                                      cartViewModelQuantity.increaseQuantity(
+                                          quantity!, product!);
                                       // setState(() {
                                       //   amount++;
                                       // });

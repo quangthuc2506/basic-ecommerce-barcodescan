@@ -139,17 +139,12 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
               Obx(
-                () => categories.isEmpty
-                    ? const Padding(
-                        padding: EdgeInsets.only(top: 50),
-                        child: CircularProgressIndicator(),
-                      )
-                    : ListView.builder(
+                () => (categories.isNotEmpty && products.isNotEmpty)
+                    ? ListView.builder(
                         physics: const ScrollPhysics(),
                         shrinkWrap: true,
                         itemCount: homeViewModel.categories.length,
                         itemBuilder: ((context, indexLSP) {
-
                           print("categories length: ${categories.length}");
                           print("products length: ${products.length}");
                           RxList<dynamic> productsById = homeViewModel
@@ -162,8 +157,8 @@ class HomeScreen extends StatelessWidget {
                                 Align(
                                   alignment: Alignment.centerLeft,
                                   child: Padding(
-                                    padding:
-                                        const EdgeInsets.symmetric(vertical: 20),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 20),
                                     child: Text(categories[indexLSP].tenLSP,
                                         style: const TextStyle(
                                             fontSize: 25,
@@ -187,23 +182,27 @@ class HomeScreen extends StatelessWidget {
                                                   mainAxisSpacing: 25),
                                           itemCount: productsById.length,
                                           itemBuilder: (context, index) {
-                                            Product product = productsById[index];
+                                            Product product =
+                                                productsById[index];
                                             return ProductCart(
                                               onTap: () {
                                                 Get.toNamed(
-                                                    RouteName.detailProductScreen,
+                                                    RouteName
+                                                        .detailProductScreen,
                                                     arguments: product);
                                               },
                                               onPressAdd: () {
                                                 Get.find<CartViewModel>(
                                                         tag: 'cartViewModel')
-                                                    .addToCart(product.idSP!);
+                                                    .addToCart(
+                                                        idSP: product.idSP!);
                                               },
                                               name: product.tenSP,
                                               price: product.giaSP,
                                               image: FadeInImage.assetNetwork(
                                                 image: product.hinhAnhSP!,
-                                                placeholder: AppAssets.gifloading,
+                                                placeholder:
+                                                    AppAssets.gifloading,
                                               ),
                                             );
                                           },
@@ -213,6 +212,10 @@ class HomeScreen extends StatelessWidget {
                             ),
                           );
                         }),
+                      )
+                    : const Padding(
+                        padding: EdgeInsets.only(top: 50),
+                        child: CircularProgressIndicator(),
                       ),
               )
             ],

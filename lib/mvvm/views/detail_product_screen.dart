@@ -103,6 +103,7 @@ class DetailProductScreen extends StatelessWidget {
                     height: 100,
                     child: SfBarcodeGenerator(
                       value: product!.idSP,
+                      showValue: true,
                       symbology: Code128(),
                     )),
               ),
@@ -232,7 +233,9 @@ class DetailProductScreen extends StatelessWidget {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      cartViewModel.addToCart(product!.idSP!);
+                      print("so luong: ${quantity!.value}");
+                      cartViewModel.addToCart(
+                          idSP: product!.idSP!, soLuong: quantity!.value);
                       Get.toNamed(RouteName.cartScreen);
                     },
                     child: const Text(
@@ -278,6 +281,10 @@ class DetailProductScreen extends StatelessWidget {
                       itemBuilder: (context, index) {
                         Product product = productsById[index];
                         return ProductCart(
+                          onPressAdd: () {
+                            Get.find<CartViewModel>(tag: 'cartViewModel')
+                                .addToCart(idSP: product.idSP!);
+                          },
                           onTap: () {
                             Get.toNamed(RouteName.detailProductScreen,
                                 arguments: product);

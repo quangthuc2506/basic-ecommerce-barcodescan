@@ -1,5 +1,4 @@
 import 'package:ecommerce_qrcode/barcode/barcode_detector.dart';
-import 'package:ecommerce_qrcode/main.dart';
 import 'package:ecommerce_qrcode/mvvm/models/product.dart';
 import 'package:ecommerce_qrcode/mvvm/viewmodels/cart_viewmodel.dart';
 import 'package:ecommerce_qrcode/mvvm/viewmodels/home_viewmodel.dart';
@@ -15,15 +14,23 @@ class BarcodeScannerView extends StatefulWidget {
 }
 
 class _BarcodeScannerViewState extends State<BarcodeScannerView> {
-  BarcodeScanner barcodeScanner = GoogleMlKit.vision.barcodeScanner();
+  BarcodeScanner? barcodeScanner;
   var cartViewModel = Get.find<CartViewModel>(tag: 'cartViewModel');
   var homeViewModel = Get.find<HomeViewModel>(tag: 'homeViewModel');
   bool isBusy = false;
   CustomPaint? customPaint;
 
   @override
+  void initState() {
+    print("init");
+    barcodeScanner = GoogleMlKit.vision.barcodeScanner();
+    super.initState();
+  }
+
+  @override
   void dispose() {
-    barcodeScanner.close();
+    print("disspose");
+    barcodeScanner!.close();
     super.dispose();
   }
 
@@ -41,40 +48,27 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
   Future<void> processImage(InputImage inputImage) async {
     if (isBusy) return;
     isBusy = true;
-    String? valueId = "";
-    final barcodes = await barcodeScanner.processImage(inputImage);
+    List<Barcode> barcodes = await barcodeScanner!.processImage(inputImage);
     print('Found ${barcodes.length} barcodes');
+
     if (inputImage.inputImageData?.size != null &&
-            inputImage.inputImageData?.imageRotation != null ||
+        inputImage.inputImageData?.imageRotation != null &&
         barcodes.isNotEmpty) {
-      for (final Barcode barcode in barcodes) {
-        valueId = barcode.value.displayValue!.trim();
-        break;
+      String valueId = barcodes[0].value.displayValue!.trim();
+      // kiem tra du lieu scan duoc co trong bang id san pham khong
+      bool checkExist =
+          cartViewModel.checkIdExist(homeViewModel.products, valueId);
+      if (checkExist == true) {
+        Product product = cartViewModel.getProductById(valueId);
+        cartViewModel.addToCart(idSP: valueId.trim());
+        isBusy = true;
+
+        barcodes.clear();
+
+        Get.offNamed(RouteName.detailProductScreen, arguments: product);
+
+        return;
       }
-
-      if (barcodes.isNotEmpty) {
-        print("du lieu scan duoc: ${valueId}");
-        homeViewModel.getProductData();
-        bool checkExist =
-            cartViewModel.checkIdExist(homeViewModel.products, valueId);
-        if (checkExist == true) {
-          Product product = cartViewModel.getProductById(valueId);
-
-          cartViewModel.addToCart(valueId!.trim());
-          print("value ID scanned : $valueId");
-          print("value type : ${valueId.runtimeType}");
-
-          print("productId : ${product.idSP}");
-          print("productId type : ${product.idSP.runtimeType}");
-
-          print(
-              "so sanh product Id : ${product.idSP!.trim() == valueId.trim()}");
-
-          Get.offAndToNamed(RouteName.detailProductScreen, arguments: product);
-          return;
-        }
-      }
-
       final painter = BarcodeDetectorPainter(
           barcodes,
           inputImage.inputImageData!.size,

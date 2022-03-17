@@ -12,14 +12,14 @@ class SignInViewModel extends GetxController {
         Get.toNamed(RouteName.homeScreen);
       }
     } catch (e) {
-      print("Error signing in $e");
+      e.printError();
     }
   }
 
   GoogleSignInAccount? getUser() {
     return googleSignIn.currentUser;
   }
-  
+
   void signOut() {
     googleSignIn.disconnect();
   }
