@@ -1,11 +1,10 @@
-import 'package:ecommerce_qrcode/barcode/barcode_scanner_view.dart';
 import 'package:ecommerce_qrcode/mvvm/models/product.dart';
 import 'package:ecommerce_qrcode/mvvm/viewmodels/cart_viewmodel.dart';
 import 'package:ecommerce_qrcode/mvvm/viewmodels/home_viewmodel.dart';
 import 'package:ecommerce_qrcode/mvvm/viewmodels/sign_in_viewmodel.dart';
 import 'package:ecommerce_qrcode/mvvm/widgets/dialog_sign_out.dart';
 import 'package:ecommerce_qrcode/mvvm/widgets/product_card.dart';
-import 'package:ecommerce_qrcode/routes/routes.dart';
+import 'package:ecommerce_qrcode/routes/route_name.dart';
 import 'package:ecommerce_qrcode/values/app_assets.dart';
 import 'package:ecommerce_qrcode/values/app_styles.dart';
 import 'package:flutter/material.dart';
@@ -16,14 +15,15 @@ class HomeScreen extends StatelessWidget {
   HomeScreen({Key? key}) : super(key: key);
 
   SignInViewModel signInViewModel = Get.find(tag: 'signInViewModel');
-  HomeViewModel homeViewModel =
-      Get.put(HomeViewModel(), tag: 'homeViewModel', permanent: true);
+  HomeViewModel homeViewModel =  Get.put(HomeViewModel(), tag: 'homeViewModel', permanent: true);
+  CartViewModel cartViewModel = Get.put(CartViewModel(), tag: 'cartViewModel');
 
   @override
   Widget build(BuildContext context) {
     GoogleSignInAccount? user = signInViewModel.getUser();
     RxList<dynamic> categories = homeViewModel.categories;
     RxList<dynamic> products = homeViewModel.products;
+    
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -79,7 +79,7 @@ class HomeScreen extends StatelessWidget {
                 AppAssets.iconQR,
               ),
               onPressed: () {
-                Get.to(() => BarcodeScannerView());
+                Get.toNamed(RouteName.barcodeScreen);
               },
             ),
           ),
@@ -145,12 +145,8 @@ class HomeScreen extends StatelessWidget {
                         shrinkWrap: true,
                         itemCount: homeViewModel.categories.length,
                         itemBuilder: ((context, indexLSP) {
-                          print("categories length: ${categories.length}");
-                          print("products length: ${products.length}");
                           RxList<dynamic> productsById = homeViewModel
                               .getProductsById(categories[indexLSP].idLSP);
-                          print("products id length: ${productsById.length}");
-
                           return Obx(
                             () => Column(
                               children: [

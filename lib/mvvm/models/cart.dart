@@ -6,10 +6,10 @@ class Cart {
   String? email;
   String? idSanPham;
   String? idDonHang;
-  int? soLuong;
+  int? soLuong; // quantity was saved in the database
   // local variable
   RxBool? check = false.obs;
-  RxInt? soLuongLocal = 1.obs; // so luong hien thi o may khach hang
+  RxInt? currentQuantity = 1.obs; // quantity is showing in the cart now
   Cart({this.email, this.idSanPham, this.soLuong, this.idDonHang, this.check});
   factory Cart.fromJson(Map<String, dynamic> json) => Cart(
       email: json['email'],

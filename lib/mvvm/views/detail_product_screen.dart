@@ -4,7 +4,7 @@ import 'package:ecommerce_qrcode/mvvm/viewmodels/home_viewmodel.dart';
 import 'package:ecommerce_qrcode/mvvm/viewmodels/sign_in_viewmodel.dart';
 import 'package:ecommerce_qrcode/mvvm/widgets/dialog_sign_out.dart';
 import 'package:ecommerce_qrcode/mvvm/widgets/product_card.dart';
-import 'package:ecommerce_qrcode/routes/routes.dart';
+import 'package:ecommerce_qrcode/routes/route_name.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -18,11 +18,11 @@ class DetailProductScreen extends StatelessWidget {
   HomeViewModel homeViewModel = Get.find(tag: 'homeViewModel');
   CartViewModel cartViewModel = Get.find<CartViewModel>(tag: 'cartViewModel');
   RxInt? quantity = 1.obs;
+
   @override
   Widget build(BuildContext context) {
     GoogleSignInAccount? user = signInViewModel.getUser();
     var productsById = homeViewModel.getProductsById(product!.idLSP!);
-
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -54,8 +54,6 @@ class DetailProductScreen extends StatelessWidget {
                   () {
                     signInViewModel.signOut();
                     Get.offNamedUntil(RouteName.signInScreen, (route) => false);
-                    Get.delete<CartViewModel>(tag: 'cartViewModel');
-                    // Get.offAllNamed(RouteName.signInScreen);
                   },
                 );
               },

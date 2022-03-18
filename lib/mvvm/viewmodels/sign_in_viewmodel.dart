@@ -1,4 +1,4 @@
-import 'package:ecommerce_qrcode/routes/routes.dart';
+import 'package:ecommerce_qrcode/routes/route_name.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 

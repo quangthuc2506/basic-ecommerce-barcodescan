@@ -13,13 +13,13 @@ class CartViewModel extends GetxController {
   SignInViewModel signInViewModel = Get.find(tag: 'signInViewModel');
 
   String? email;
-
-  //// check so luong san pham
-  RxInt total = 0.obs; // tong so luong mua
-
   RxDouble totalMoney = 0.0.obs;
   RxDouble shipFee = 0.0.obs;
   RxDouble totalPrice = 0.0.obs;
+  RxInt total = 0.obs; // tong so luong mua
+
+  //// check so luong san pham
+ 
   //tang so luong moi san pham
   decreaseQuantity(RxInt quantity, Product product) {
     if (quantity > 0 && total > 0) {
@@ -62,12 +62,12 @@ class CartViewModel extends GetxController {
       if (checkAll.isTrue) {
         i.check!.value = checkAll.value;
         totalMoney.value +=
-            getProductById(i.idSanPham!).giaSP! * i.soLuongLocal!.toInt();
+            getProductById(i.idSanPham!).giaSP! * i.currentQuantity!.toInt();
         updateTotalPrice();
       } else {
         i.check!.value = checkAll.value;
         totalMoney.value -=
-            getProductById(i.idSanPham!).giaSP! * i.soLuongLocal!.toInt();
+            getProductById(i.idSanPham!).giaSP! * i.currentQuantity!.toInt();
         updateTotalPrice();
       }
     }
@@ -113,9 +113,9 @@ class CartViewModel extends GetxController {
 
   @override
   void onInit() {
-    totalPrice.value = totalMoney.value + shipFee.value;
     email = signInViewModel.currentUser!.email;
     getCartsData(email!);
+    totalPrice.value = totalMoney.value + shipFee.value;
     super.onInit();
   }
 
@@ -143,13 +143,14 @@ class CartViewModel extends GetxController {
       };
       // chuyen json sang cart va add vao local
       Cart cart = Cart.fromJson(jsonCart);
-      cart.soLuongLocal!.value = soLuong ?? 1;
+      cart.currentQuantity!.value = soLuong ?? 1;
       _carts.add(cart);
 
       // add item len database
       try {
+        print("add database ");
         final url =
-            Uri.parse("https://62216ed9afd560ea69b0255d.mockapi.io/donHang");
+            Uri.parse("http://62216ed9afd560ea69b0255d.mockapi.io/donHang");
         final response = await http.post(url,
             headers: {"Content-type": "application/json"},
             body: json.encode(jsonCart),
@@ -180,7 +181,7 @@ class CartViewModel extends GetxController {
     // delete database
     try {
       final url = Uri.parse(
-          "https://62216ed9afd560ea69b0255d.mockapi.io/donHang/$idDonHang");
+          "http://62216ed9afd560ea69b0255d.mockapi.io/donHang/$idDonHang");
       final response = await http.delete(url);
       print(response.body);
       SnackbarCustom.showSnackbarError("Sản phẩm đã được xoá khỏi giỏ hàng!");
@@ -193,11 +194,21 @@ class CartViewModel extends GetxController {
   final RxList<dynamic> _carts = [].obs;
   RxList<dynamic> get carts => _carts;
   getCartsData(String email) async {
+    print("getting");
     try {
+      // set certificate in case some devices was fail
+      // final ioc = HttpClient();
+      // ioc.badCertificateCallback =
+      //     (X509Certificate cert, String host, int port) => true;
+      // final http = IOClient(ioc);
+
+      ///
       final url =
-          Uri.parse('https://62216ed9afd560ea69b0255d.mockapi.io/donHang');
+          Uri.parse('http://62216ed9afd560ea69b0255d.mockapi.io/donHang');
       final response = await http.get(url);
+      print(response.statusCode);
       if (200 == response.statusCode) {
+        print(response.body);
         String source = const Utf8Decoder().convert(response.bodyBytes);
         var sourceCarts = Cart().cartListModelFromJson(source);
         _carts.clear();
@@ -205,7 +216,7 @@ class CartViewModel extends GetxController {
         for (Cart item in sourceCarts) {
           if (item.email == email) {
             total.value += item.soLuong!; // tong so luong san pham ban dau
-            item.soLuongLocal!.value =
+            item.currentQuantity!.value =
                 item.soLuong!; // cap nhat so luong san pham
 
             _carts.add(item);
@@ -217,16 +228,28 @@ class CartViewModel extends GetxController {
     }
   }
 
-  Product getProductById(String? idSP) {
+  Product getProductById(String idSP) {
     Product? reach;
     // lay danh sach tat ca san pham
-    var products2 = homeViewModel.products;
-    for (Product pro in products2) {
+    // var products2 = homeViewModel.products;
+   
+    for (Product pro in homeViewModel.products) {
       if (pro.idSP == idSP) {
         reach = pro;
         break;
       }
     }
     return reach!;
+  }
+
+  @override
+  void onClose() {
+    print("da close");
+    super.onClose();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 }

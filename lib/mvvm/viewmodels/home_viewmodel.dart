@@ -9,7 +9,6 @@ class HomeViewModel extends GetxController {
   void onInit() {
     getProductData();
     getCategoryData();
-
     super.onInit();
   }
 

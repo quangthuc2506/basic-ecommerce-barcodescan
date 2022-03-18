@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 
 class CartScreen extends StatelessWidget {
   CartScreen({Key? key}) : super(key: key);
-  CartViewModel cartViewModel = Get.find(tag: 'cartViewModel');
+  CartViewModel cartViewModel = Get.find<CartViewModel>(tag: 'cartViewModel');
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -81,7 +81,7 @@ class CartScreen extends StatelessWidget {
                                 product: product,
                                 checkProduct: cartViewModel.carts[index].check,
                                 quantity:
-                                    cartViewModel.carts[index].soLuongLocal,
+                                    cartViewModel.carts[index].currentQuantity,
                                 onPressedDelete: () {
                                   cartViewModel.onDeleteCartById(
                                       cartViewModel.carts[index].idDonHang);
