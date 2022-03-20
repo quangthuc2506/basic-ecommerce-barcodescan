@@ -10,32 +10,30 @@ class BarcodeScannerScreen extends StatefulWidget {
 }
 
 class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
-  var barcodeController = Get.put(BarcodeScannerViewModel(), tag: 'barcodeScannerViewModel');
+  BarcodeScannerViewModel barcodeScannerViewModel = Get.put(BarcodeScannerViewModel(), tag: 'barcodeScannerViewModel');
+
+
+  ////////////////////////////////////////////// don't touch  ^^
   @override
   void initState() {
     super.initState();
     _startCamera();
   }
-
-  @override
-  void dispose() {
-    barcodeController.camController!.dispose();
-    super.dispose();
-  }
   
   Future _startCamera() async {
-    barcodeController.camController?.initialize().then((_) {
+    barcodeScannerViewModel.camController?.initialize().then((_) {
       if (!mounted) {
         return;
       }
-      barcodeController.camController?.startImageStream(barcodeController.processCameraImage);
+      barcodeScannerViewModel.camController?.startImageStream(barcodeScannerViewModel.processCameraImage);
       setState(() {});
     });
   }
+  ////////////////////////////////////////
 
   @override
   Widget build(BuildContext context) {
-    if (!barcodeController.camController!.value.isInitialized) {
+    if (!barcodeScannerViewModel.camController!.value.isInitialized) {
       return Container();
     }
     return MaterialApp(
@@ -47,7 +45,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
           body: SizedBox(
               width: double.infinity,
               height: double.infinity,
-              child: CameraPreview(barcodeController.camController!))),
+              child: CameraPreview(barcodeScannerViewModel.camController!))),
       debugShowCheckedModeBanner: false,
     );
   }

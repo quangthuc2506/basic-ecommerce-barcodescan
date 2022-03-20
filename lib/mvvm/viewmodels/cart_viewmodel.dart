@@ -111,14 +111,6 @@ class CartViewModel extends GetxController {
     }
   }
 
-  @override
-  void onInit() {
-    email = signInViewModel.currentUser!.email;
-    getCartsData(email!);
-    totalPrice.value = totalMoney.value + shipFee.value;
-    super.onInit();
-  }
-
   //check id scan duoc co hop le khong
   bool checkIdExist(RxList<dynamic> productsPara, String? id) {
     for (Product pr in productsPara) {
@@ -149,21 +141,19 @@ class CartViewModel extends GetxController {
       // add item len database
       try {
         print("add database ");
-        final url =
-            Uri.parse("http://62216ed9afd560ea69b0255d.mockapi.io/donHang");
+        final url = Uri.parse("http://62216ed9afd560ea69b0255d.mockapi.io/donHang");
         final response = await http.post(url,
             headers: {"Content-type": "application/json"},
             body: json.encode(jsonCart),
             encoding: Encoding.getByName("utf8-8"));
-        print(response.body);
+        print("san pham da them: ${response.body}");
         SnackbarCustom.showSnackbarError("Đã thêm sản phẩm vào giỏ hàng!");
         return 'true';
       } catch (e) {
         print(e.toString());
       }
     } else {
-      SnackbarCustom.showSnackbarError(
-          "Mã sản phẩm không hợp lệ, vui lòng thử lại!");
+      SnackbarCustom.showSnackbarError("Mã sản phẩm không hợp lệ, vui lòng thử lại!");
       return 'false';
     }
     // set item can add
@@ -180,8 +170,7 @@ class CartViewModel extends GetxController {
     }
     // delete database
     try {
-      final url = Uri.parse(
-          "http://62216ed9afd560ea69b0255d.mockapi.io/donHang/$idDonHang");
+      final url = Uri.parse("http://62216ed9afd560ea69b0255d.mockapi.io/donHang/$idDonHang");
       final response = await http.delete(url);
       print(response.body);
       SnackbarCustom.showSnackbarError("Sản phẩm đã được xoá khỏi giỏ hàng!");
@@ -203,8 +192,7 @@ class CartViewModel extends GetxController {
       // final http = IOClient(ioc);
 
       ///
-      final url =
-          Uri.parse('http://62216ed9afd560ea69b0255d.mockapi.io/donHang');
+      final url = Uri.parse('http://62216ed9afd560ea69b0255d.mockapi.io/donHang');
       final response = await http.get(url);
       print(response.statusCode);
       if (200 == response.statusCode) {
@@ -242,6 +230,13 @@ class CartViewModel extends GetxController {
     return reach!;
   }
 
+  @override
+  void onInit() {
+    email = signInViewModel.currentUser!.email;
+    getCartsData(email!);
+    totalPrice.value = totalMoney.value + shipFee.value;
+    super.onInit();
+  }
   @override
   void onClose() {
     print("da close");

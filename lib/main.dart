@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:camera/camera.dart';
 import 'package:ecommerce_qrcode/routes/app_routes.dart';
 import 'package:ecommerce_qrcode/routes/route_name.dart';

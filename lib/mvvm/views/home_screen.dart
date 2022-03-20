@@ -15,7 +15,8 @@ class HomeScreen extends StatelessWidget {
   HomeScreen({Key? key}) : super(key: key);
 
   SignInViewModel signInViewModel = Get.find(tag: 'signInViewModel');
-  HomeViewModel homeViewModel =  Get.put(HomeViewModel(), tag: 'homeViewModel', permanent: true);
+  HomeViewModel homeViewModel =
+      Get.put(HomeViewModel(), tag: 'homeViewModel', permanent: true);
   CartViewModel cartViewModel = Get.put(CartViewModel(), tag: 'cartViewModel');
 
   @override
@@ -23,7 +24,7 @@ class HomeScreen extends StatelessWidget {
     GoogleSignInAccount? user = signInViewModel.getUser();
     RxList<dynamic> categories = homeViewModel.categories;
     RxList<dynamic> products = homeViewModel.products;
-    
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -58,7 +59,6 @@ class HomeScreen extends StatelessWidget {
                   () {
                     signInViewModel.signOut();
                     Get.offNamedUntil(RouteName.signInScreen, (route) => false);
-                    Get.delete<CartViewModel>(tag: 'cartViewModel');
                   },
                 );
               },
@@ -178,20 +178,14 @@ class HomeScreen extends StatelessWidget {
                                                   mainAxisSpacing: 25),
                                           itemCount: productsById.length,
                                           itemBuilder: (context, index) {
-                                            Product product =
-                                                productsById[index];
+                                            Product product = productsById[index];
+                                            print(product.tenSP);
                                             return ProductCart(
                                               onTap: () {
-                                                Get.toNamed(
-                                                    RouteName
-                                                        .detailProductScreen,
-                                                    arguments: product);
+                                                Get.toNamed(RouteName.detailProductScreen, arguments: product);
                                               },
                                               onPressAdd: () {
-                                                Get.find<CartViewModel>(
-                                                        tag: 'cartViewModel')
-                                                    .addToCart(
-                                                        idSP: product.idSP!);
+                                                Get.find<CartViewModel>(tag: 'cartViewModel').addToCart(idSP: product.idSP!);
                                               },
                                               name: product.tenSP,
                                               price: product.giaSP,

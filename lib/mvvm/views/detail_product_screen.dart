@@ -11,8 +11,8 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:syncfusion_flutter_barcodes/barcodes.dart';
 
 class DetailProductScreen extends StatelessWidget {
-  Product? product;
-  DetailProductScreen({Key? key, this.product}) : super(key: key);
+  Product product = Get.arguments as Product;
+  DetailProductScreen({Key? key}) : super(key: key);
 
   SignInViewModel signInViewModel = Get.find(tag: 'signInViewModel');
   HomeViewModel homeViewModel = Get.find(tag: 'homeViewModel');
@@ -22,6 +22,7 @@ class DetailProductScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     GoogleSignInAccount? user = signInViewModel.getUser();
+    print(product!.tenSP);
     var productsById = homeViewModel.getProductsById(product!.idLSP!);
     return Scaffold(
       appBar: AppBar(

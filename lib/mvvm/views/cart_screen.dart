@@ -1,11 +1,13 @@
 import 'package:ecommerce_qrcode/mvvm/models/product.dart';
 import 'package:ecommerce_qrcode/mvvm/viewmodels/cart_viewmodel.dart';
+import 'package:ecommerce_qrcode/routes/route_name.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class CartScreen extends StatelessWidget {
   CartScreen({Key? key}) : super(key: key);
   CartViewModel cartViewModel = Get.find<CartViewModel>(tag: 'cartViewModel');
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,227 +25,255 @@ class CartScreen extends StatelessWidget {
       body: SizedBox(
         width: MediaQuery.of(context).size.width,
         height: double.infinity,
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Obx(
-                      () => Checkbox(
-                          materialTapTargetSize:
-                              MaterialTapTargetSize.shrinkWrap,
-                          value: cartViewModel.checkAll.value,
-                          activeColor: Colors.green,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5)),
-                          onChanged: (value) {
-                            cartViewModel.onCheckAll();
-                          }),
-                    ),
-                    Obx(
-                      () => Text(
-                        "All (${cartViewModel.total} products)",
-                        style: const TextStyle(fontWeight: FontWeight.w500),
-                      ),
-                    )
-                  ],
-                ),
-                IconButton(
-                    onPressed: () {},
-                    icon: const Icon(
-                      Icons.delete_forever_rounded,
-                      color: Colors.green,
-                    ))
-              ],
-            ),
-            const Divider(
-              height: 0,
-              thickness: 1,
-            ),
-            Flexible(
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 270),
-                child: SingleChildScrollView(
-                  child: Obx(
-                    () => cartViewModel.carts.isEmpty
-                        ? const Center(child: CircularProgressIndicator())
-                        : ListView.builder(
-                            physics: const ScrollPhysics(),
-                            shrinkWrap: true,
-                            itemCount: cartViewModel.carts.length,
-                            itemBuilder: (context, index) {
-                              // lay product o vi tri index
-                              Product product = cartViewModel.getProductById(
-                                  cartViewModel.carts[index].idSanPham);
-                              return CardInCart(
-                                product: product,
-                                checkProduct: cartViewModel.carts[index].check,
-                                quantity:
-                                    cartViewModel.carts[index].currentQuantity,
-                                onPressedDelete: () {
-                                  cartViewModel.onDeleteCartById(
-                                      cartViewModel.carts[index].idDonHang);
-                                },
-                              );
-                            }),
+        child: cartViewModel.carts.isEmpty
+            ? Center(
+                child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    "Your cart is empty",
+                    style: TextStyle(fontSize: 20),
                   ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-      bottomSheet: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Divider(
-            thickness: 1,
-            height: 0,
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 20, right: 20),
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: TextFormField(
-                    decoration: InputDecoration(
-                      isDense: true,
-                      contentPadding: const EdgeInsets.all(10),
-                      hintText: "Enter Your Coupon",
-                      prefixIcon: const Icon(
-                        Icons.discount,
-                        color: Colors.green,
-                      ),
-                      suffixIcon: ElevatedButton(
-                        onPressed: () {},
-                        child: const Text("Apply"),
-                        style: ElevatedButton.styleFrom(
-                            primary: Colors.green,
-                            shape: const RoundedRectangleBorder(
-                                borderRadius: BorderRadius.only(
-                                    bottomRight: Radius.circular(10),
-                                    topRight: Radius.circular(10)))),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                          borderSide:
-                              const BorderSide(width: 0.25, color: Colors.grey),
-                          borderRadius: BorderRadius.circular(10)),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide:
-                            const BorderSide(width: 0.25, color: Colors.grey),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
+                  const SizedBox(
+                    height: 20,
                   ),
-                ),
-                Card(
-                    margin: EdgeInsets.zero,
-                    elevation: 1,
-                    shape: RoundedRectangleBorder(
-                        side: const BorderSide(width: 0.5, color: Colors.grey),
-                        borderRadius: BorderRadius.circular(10)),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
+                  ElevatedButton(
+                    onPressed: () {
+                      Get.toNamed(RouteName.homeScreen);
+                    },
+                    child: const Text("Continue Shopping"),
+                    style: ElevatedButton.styleFrom(primary: Colors.green),
+                  )
+                ],
+              ))
+            : Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
                         children: [
-                          Padding(
-                            padding: const EdgeInsets.all(10),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Obx(
-                                  () => Text(
-                                    "Item(${cartViewModel.carts.length})",
-                                    style: const TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w400,
-                                        color: Color(0xff9098B1)),
-                                  ),
-                                ),
-                                Obx(
-                                  () => Text(
-                                      "\$${cartViewModel.totalMoney.toStringAsFixed(2)}",
-                                      style: const TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w400,
-                                          color: Colors.black)),
-                                )
-                              ],
+                          Obx(
+                            () => Checkbox(
+                                materialTapTargetSize:
+                                    MaterialTapTargetSize.shrinkWrap,
+                                value: cartViewModel.checkAll.value,
+                                activeColor: Colors.green,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(5)),
+                                onChanged: (value) {
+                                  cartViewModel.onCheckAll();
+                                }),
+                          ),
+                          Obx(
+                            () => Text(
+                              "All (${cartViewModel.total} products)",
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.w500),
                             ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(
-                                bottom: 10, left: 10, right: 10),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                const Text(
-                                  "Shipping",
-                                  style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w400,
-                                      color: Color(0xff9098B1)),
-                                ),
-                                Obx(
-                                  () => Text("\$${cartViewModel.shipFee}",
-                                      style: const TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w400,
-                                          color: Colors.black)),
-                                )
-                              ],
-                            ),
-                          ),
-                          const Divider(
-                            thickness: 1,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(10),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                const Text(
-                                  "Total Price",
-                                  style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w800,
-                                      color: Colors.black),
-                                ),
-                                Obx(
-                                  () => Text(
-                                      "\$${cartViewModel.totalPrice.toStringAsFixed(2)}",
-                                      style: const TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w900,
-                                          color: Colors.green)),
-                                )
-                              ],
-                            ),
-                          ),
+                          )
                         ],
                       ),
-                    )),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: ElevatedButton(
-                    onPressed: () {},
-                    child: Obx(() => Text(
-                        "Pay \$${cartViewModel.totalPrice.toStringAsFixed(2)}")),
-                    style: ElevatedButton.styleFrom(
-                        primary: Colors.green,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10)),
-                        fixedSize: Size(MediaQuery.of(context).size.width, 50)),
+                      IconButton(
+                          onPressed: () {},
+                          icon: const Icon(
+                            Icons.delete_forever_rounded,
+                            color: Colors.green,
+                          ))
+                    ],
                   ),
-                )
+                  const Divider(
+                    height: 0,
+                    thickness: 1,
+                  ),
+                  Flexible(
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 270),
+                      child: SingleChildScrollView(
+                        child: Obx(
+                          () => ListView.builder(
+                              physics: const ScrollPhysics(),
+                              shrinkWrap: true,
+                              itemCount: cartViewModel.carts.length,
+                              itemBuilder: (context, index) {
+                                // lay product o vi tri index
+                                Product product = cartViewModel.getProductById(
+                                    cartViewModel.carts[index].idSanPham);
+                                return CardInCart(
+                                  product: product,
+                                  checkProduct:
+                                      cartViewModel.carts[index].check,
+                                  quantity: cartViewModel
+                                      .carts[index].currentQuantity,
+                                  onPressedDelete: () {
+                                    cartViewModel.onDeleteCartById(
+                                        cartViewModel.carts[index].idDonHang);
+                                  },
+                                );
+                              }),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+      ),
+      bottomSheet: cartViewModel.carts.isEmpty
+          ? const SizedBox()
+          : Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Divider(
+                  thickness: 1,
+                  height: 0,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 20, right: 20),
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        child: TextFormField(
+                          decoration: InputDecoration(
+                            isDense: true,
+                            contentPadding: const EdgeInsets.all(10),
+                            hintText: "Enter Your Coupon",
+                            prefixIcon: const Icon(
+                              Icons.discount,
+                              color: Colors.green,
+                            ),
+                            suffixIcon: ElevatedButton(
+                              onPressed: () {},
+                              child: const Text("Apply"),
+                              style: ElevatedButton.styleFrom(
+                                  primary: Colors.green,
+                                  shape: const RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.only(
+                                          bottomRight: Radius.circular(10),
+                                          topRight: Radius.circular(10)))),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(
+                                    width: 0.25, color: Colors.grey),
+                                borderRadius: BorderRadius.circular(10)),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                  width: 0.25, color: Colors.grey),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Card(
+                          margin: EdgeInsets.zero,
+                          elevation: 1,
+                          shape: RoundedRectangleBorder(
+                              side: const BorderSide(
+                                  width: 0.5, color: Colors.grey),
+                              borderRadius: BorderRadius.circular(10)),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.all(10),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Obx(
+                                        () => Text(
+                                          "Item(${cartViewModel.carts.length})",
+                                          style: const TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w400,
+                                              color: Color(0xff9098B1)),
+                                        ),
+                                      ),
+                                      Obx(
+                                        () => Text(
+                                            "\$${cartViewModel.totalMoney.toStringAsFixed(2)}",
+                                            style: const TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w400,
+                                                color: Colors.black)),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      bottom: 10, left: 10, right: 10),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      const Text(
+                                        "Shipping",
+                                        style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w400,
+                                            color: Color(0xff9098B1)),
+                                      ),
+                                      Obx(
+                                        () => Text("\$${cartViewModel.shipFee}",
+                                            style: const TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w400,
+                                                color: Colors.black)),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                                const Divider(
+                                  thickness: 1,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(10),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      const Text(
+                                        "Total Price",
+                                        style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w800,
+                                            color: Colors.black),
+                                      ),
+                                      Obx(
+                                        () => Text(
+                                            "\$${cartViewModel.totalPrice.toStringAsFixed(2)}",
+                                            style: const TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w900,
+                                                color: Colors.green)),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        child: ElevatedButton(
+                          onPressed: () {},
+                          child: Obx(() => Text(
+                              "Pay \$${cartViewModel.totalPrice.toStringAsFixed(2)}")),
+                          style: ElevatedButton.styleFrom(
+                              primary: Colors.green,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10)),
+                              fixedSize:
+                                  Size(MediaQuery.of(context).size.width, 50)),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
               ],
             ),
-          ),
-        ],
-      ),
     );
   }
 }
